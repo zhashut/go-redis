@@ -36,6 +36,10 @@ type EchoHandler struct {
 	closing    atomic.Boolean
 }
 
+func MakeHandler() *EchoHandler {
+	return &EchoHandler{}
+}
+
 func (handler *EchoHandler) Handle(ctx context.Context, conn net.Conn) {
 	if handler.closing.Get() {
 		_ = conn.Close()
@@ -53,8 +57,9 @@ func (handler *EchoHandler) Handle(ctx context.Context, conn net.Conn) {
 			if err == io.EOF {
 				logger.Info("Connection close")
 				handler.activeConn.Delete(client)
+			} else {
+				logger.Warn(err)
 			}
-			logger.Warn(err)
 			return
 		}
 		client.Waiting.Add(1)
