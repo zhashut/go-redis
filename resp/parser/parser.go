@@ -37,8 +37,8 @@ func (s *readState) finished() bool {
 	return s.expectedArgsCount > 0 && len(s.args) == s.expectedArgsCount
 }
 
-func ParseStream(reader io.Reader) chan<- *Payload {
-	ch := make(chan<- *Payload)
+func ParseStream(reader io.Reader) <-chan *Payload {
+	ch := make(chan *Payload)
 	go parse0(reader, ch)
 	return ch
 }
@@ -138,7 +138,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 	}
 }
 
-// *3\r\n$3\r\nSET\r\n$3\rInkey\rln$5\rInvaluelr\n
+// *3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n
 func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 	var msg []byte
 	var err error
