@@ -49,7 +49,7 @@ func (db *DB) Exec(c resp.Connection, cmdLine CmdLine) resp.Reply {
 
 func validateArity(arity int, cmdArgs [][]byte) bool {
 	argsNum := len(cmdArgs)
-	if argsNum > 0 {
+	if arity > 0 {
 		return argsNum == arity
 	}
 	return argsNum >= -arity
