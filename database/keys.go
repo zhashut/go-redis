@@ -2,6 +2,7 @@ package database
 
 import (
 	"go-redis/interface/resp"
+	"go-redis/lib/utils"
 	"go-redis/lib/wildcard"
 	"go-redis/resp/reply"
 )
@@ -21,7 +22,10 @@ func execDel(db *DB, args [][]byte) resp.Reply {
 		keys[i] = string(arg)
 	}
 	deleted := db.Removes(keys...)
-
+	// 记录操作
+	if deleted > 0 {
+		db.addAof(utils.ToCmdLine2("del", args...))
+	}
 	return reply.MakeIntReply(int64(deleted))
 }
 
@@ -39,9 +43,10 @@ func execExists(db *DB, args [][]byte) resp.Reply {
 	return reply.MakeIntReply(result)
 }
 
-// FLUSH
+// FLUSHDB
 func execFlush(db *DB, args [][]byte) resp.Reply {
 	db.Flush()
+	db.addAof(utils.ToCmdLine2("flushdb", args...))
 	return reply.MakeOkReply()
 }
 
@@ -71,7 +76,7 @@ func execRename(db *DB, args [][]byte) resp.Reply {
 	}
 	db.PutEntity(dest, entity)
 	db.Remove(src)
-
+	db.addAof(utils.ToCmdLine2("rename", args...))
 	return reply.MakeOkReply()
 }
 
@@ -91,7 +96,7 @@ func execRenameNx(db *DB, args [][]byte) resp.Reply {
 	}
 	db.PutEntity(dest, entity)
 	db.Remove(src)
-
+	db.addAof(utils.ToCmdLine2("renamenx", args...))
 	return reply.MakeIntReply(1)
 }
 
