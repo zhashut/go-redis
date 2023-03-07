@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"go-redis/cluster"
+	"go-redis/config"
 	"go-redis/database"
 	dataface "go-redis/interface/database"
 	"go-redis/lib/logger"
@@ -34,9 +36,12 @@ type RespHandler struct {
 }
 
 func MakeHandler() *RespHandler {
-	// TODO: 实现Database接口
 	var db dataface.Database
-	db = database.NewStandaloneDatabase()
+	if config.Properties.Self != "" && len(config.Properties.Peers) > 0 {
+		db = cluster.MakeClusterDatabase()
+	} else {
+		db = database.NewStandaloneDatabase()
+	}
 	return &RespHandler{
 		db: db,
 	}
