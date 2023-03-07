@@ -5,7 +5,10 @@ import (
 	"go-redis/interface/database"
 	"go-redis/lib/logger"
 	"go-redis/lib/utils"
+	"go-redis/resp/connection"
+	"go-redis/resp/parser"
 	"go-redis/resp/reply"
+	"io"
 	"os"
 	"strconv"
 )
@@ -82,6 +85,36 @@ func (handler *AofHandler) handleAof() {
 	}
 }
 
-func (hanlder *AofHandler) LoadAof() {
-
+// LoadAof 恢复aof
+func (handler *AofHandler) LoadAof() {
+	file, err := os.Open(config.Properties.AppendFilename)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	// 解析文件
+	ch := parser.ParseStream(file)
+	fakeConn := &connection.Connection{}
+	for p := range ch {
+		if p.Err != nil {
+			if p.Err == io.EOF {
+				break
+			}
+			logger.Error(err)
+			continue
+		}
+		if p.Data == nil {
+			logger.Error("empty data")
+			continue
+		}
+		r, ok := p.Data.(*reply.MultiBulkReply)
+		if !ok {
+			logger.Error("need multi mulk")
+			continue
+		}
+		rep := handler.db.Exec(fakeConn, r.Args)
+		if reply.IsErrorReply(rep) {
+			logger.Error("exec error", rep.ToBytes())
+		}
+	}
 }
