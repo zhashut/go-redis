@@ -36,7 +36,7 @@ type RespHandler struct {
 func MakeHandler() *RespHandler {
 	// TODO: 实现Database接口
 	var db dataface.Database
-	db = database.NewDatabase()
+	db = database.NewStandaloneDatabase()
 	return &RespHandler{
 		db: db,
 	}

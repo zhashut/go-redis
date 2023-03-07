@@ -18,13 +18,14 @@ import (
  * Description: No Description
  */
 
-type Database struct {
+// StandaloneDatabase 单机版database
+type StandaloneDatabase struct {
 	dbSet      []*DB
 	aofHandler *aof.AofHandler
 }
 
-func NewDatabase() *Database {
-	database := &Database{}
+func NewStandaloneDatabase() *StandaloneDatabase {
+	database := &StandaloneDatabase{}
 	if config.Properties.Databases == 0 {
 		config.Properties.Databases = 16
 	}
@@ -52,7 +53,7 @@ func NewDatabase() *Database {
 	return database
 }
 
-func (database *Database) Exec(client resp.Connection, args [][]byte) resp.Reply {
+func (database *StandaloneDatabase) Exec(client resp.Connection, args [][]byte) resp.Reply {
 	defer func() {
 		if err := recover(); err != nil {
 			logger.Error(err)
@@ -71,16 +72,16 @@ func (database *Database) Exec(client resp.Connection, args [][]byte) resp.Reply
 	return db.Exec(client, args)
 }
 
-func (database *Database) Close() {
+func (database *StandaloneDatabase) Close() {
 
 }
 
-func (database *Database) AfterClientClose(c resp.Connection) {
+func (database *StandaloneDatabase) AfterClientClose(c resp.Connection) {
 
 }
 
 // Select 2
-func execSelect(c resp.Connection, database *Database, args [][]byte) resp.Reply {
+func execSelect(c resp.Connection, database *StandaloneDatabase, args [][]byte) resp.Reply {
 	dbIndex, err := strconv.Atoi(string(args[0]))
 	if err != nil {
 		return reply.MakeErrReply("ERR invalid DB index")
