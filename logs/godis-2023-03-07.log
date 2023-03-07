@@ -2,3 +2,7 @@
 [INFO][server.go:71] 2023/03/07 14:49:52 accepted link
 [INFO][server.go:43] 2023/03/07 14:55:45 start listen
 [INFO][server.go:71] 2023/03/07 14:55:52 accepted link
+[ERROR][aof.go:107] 2023/03/07 15:25:56 empty data
+[ERROR][aof.go:107] 2023/03/07 15:25:56 empty data
+[INFO][server.go:43] 2023/03/07 15:25:56 start listen
+[INFO][server.go:71] 2023/03/07 15:27:10 accepted link
